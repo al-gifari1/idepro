@@ -466,16 +466,15 @@ export default {
 
         const userId = authData.user.id;
 
-        // Upsert profile in profiles table
+        // Update the profile (inserted automatically by the database trigger)
         const { error: profileErr } = await supabase
           .from("profiles")
-          .upsert({
-            id: userId,
-            email,
+          .update({
             tier: tier || "free",
             gmail_limit: parseInt(gmail_limit) || 1,
             updated_at: new Date().toISOString()
-          }, { onConflict: "id" });
+          })
+          .eq("id", userId);
 
         if (profileErr) {
           return json({ error: `User created, but profile upsert failed: ${profileErr.message}` }, 500);
