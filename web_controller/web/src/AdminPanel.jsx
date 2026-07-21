@@ -5,7 +5,7 @@ import {
   Settings, Bell, Search, RefreshCw, ChevronRight, ChevronLeft,
   TrendingUp, TrendingDown, Wifi, WifiOff, Trash2, ExternalLink,
   Download, Shield, Zap, AlertCircle, CheckCircle2,
-  Menu, X
+  Menu, X, Plus
 } from 'lucide-react';
 
 const supabase = createClient(
@@ -171,6 +171,13 @@ export default function AdminCommandCenter() {
   const [addGmailLabel,setAddGmailLabel]= useState('');
   const [oauthLoading, setOauthLoading] = useState(false);
   const [currentPage,  setCurrentPage]  = useState(1);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [addUserEmail, setAddUserEmail] = useState('');
+  const [addUserPassword, setAddUserPassword] = useState('');
+  const [addUserTier, setAddUserTier] = useState('free');
+  const [addUserLimit, setAddUserLimit] = useState(1);
+  const [addUserLoading, setAddUserLoading] = useState(false);
+  const [addUserError, setAddUserError] = useState('');
   const PAGE_SIZE = 10;
 
   const addLog = (msg) => {
@@ -257,6 +264,40 @@ export default function AdminCommandCenter() {
     const res  = await fetch(`${WORKER_URL}/api/admin/reassign-all`, { method: 'POST', headers: { 'x-admin-key': ADMIN_KEY } });
     const data = await res.json();
     addLog(`Re-assigned gmails for ${data.reassigned} users`);
+  };
+
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    setAddUserLoading(true);
+    setAddUserError('');
+    try {
+      const res = await fetch(`${WORKER_URL}/api/admin/create-user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': ADMIN_KEY
+        },
+        body: JSON.stringify({
+          email: addUserEmail,
+          password: addUserPassword,
+          tier: addUserTier,
+          gmail_limit: addUserLimit
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create user');
+      addLog(`Created user: ${addUserEmail}`);
+      setShowAddUserModal(false);
+      setAddUserEmail('');
+      setAddUserPassword('');
+      setAddUserTier('free');
+      setAddUserLimit(1);
+      loadData();
+    } catch (err) {
+      setAddUserError(err.message);
+    } finally {
+      setAddUserLoading(false);
+    }
   };
 
   const handleGoogleOAuthLogin = async () => {
@@ -610,13 +651,20 @@ export default function AdminCommandCenter() {
                     {t === 'all' ? 'All Tiers' : t.charAt(0).toUpperCase() + t.slice(1)}
                   </button>
                 ))}
-                {!isMobile && (
-                  <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+                  <button onClick={() => setShowAddUserModal(true)} style={{
+                    display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px',
+                    background: C.green, color: '#fff', border: 'none', borderRadius: '6px',
+                    cursor: 'pointer', fontSize: '12px', fontWeight: 600, fontFamily: 'inherit'
+                  }}>
+                    <Plus size={13} /> Add Developer
+                  </button>
+                  {!isMobile && (
                     <button style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', border: `1px solid ${C.border}`, borderRadius: '6px', background: C.white, cursor: 'pointer', fontSize: '12px', color: C.textSub, fontFamily: 'inherit' }}>
                       <Download size={13} /> Export CSV
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               {isMobile ? (
@@ -846,6 +894,81 @@ export default function AdminCommandCenter() {
 
         </main>
       </div>
+
+      {/* ══ ADD USER MODAL ══════════════════════════════════════════════ */}
+      {showAddUserModal && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 1000,
+          background: 'rgba(5, 7, 13, 0.65)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px'
+        }}>
+          <div style={{
+            background: C.white, border: `1px solid ${C.border}`, borderRadius: '12px',
+            width: '100%', maxWidth: '400px', padding: '24px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)',
+            color: C.text
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Add Developer Profile</h3>
+              <button onClick={() => setShowAddUserModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: C.textSub }}>
+                <X size={18} />
+              </button>
+            </div>
+            
+            {addUserError && (
+              <div style={{ background: C.redBg, border: `1px solid ${C.red}`, color: C.red, padding: '8px 12px', borderRadius: '8px', fontSize: '12px', marginBottom: '16px' }}>
+                {addUserError}
+              </div>
+            )}
+            
+            <form onSubmit={handleAddUser} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: C.textSub, textTransform: 'uppercase', marginBottom: '6px' }}>Developer Email</label>
+                <input required type="email" value={addUserEmail} onChange={e => setAddUserEmail(e.target.value)} placeholder="name@email.com"
+                  style={{ width: '100%', height: '38px', padding: '0 12px', border: `1px solid ${C.border}`, borderRadius: '8px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: C.textSub, textTransform: 'uppercase', marginBottom: '6px' }}>Access Password</label>
+                <input required type="password" value={addUserPassword} onChange={e => setAddUserPassword(e.target.value)} placeholder="••••••••"
+                  style={{ width: '100%', height: '38px', padding: '0 12px', border: `1px solid ${C.border}`, borderRadius: '8px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: C.textSub, textTransform: 'uppercase', marginBottom: '6px' }}>Tier</label>
+                  <select value={addUserTier} onChange={e => {
+                    const t = e.target.value;
+                    setAddUserTier(t);
+                    setAddUserLimit(t === 'free' ? 1 : t === 'pro' ? 3 : 5);
+                  }}
+                    style={{ width: '100%', height: '38px', padding: '0 8px', border: `1px solid ${C.border}`, borderRadius: '8px', fontSize: '13px', outline: 'none', background: C.white, fontFamily: 'inherit' }}
+                  >
+                    <option value="free">Free</option>
+                    <option value="pro">Pro</option>
+                    <option value="premium">Premium</option>
+                  </select>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: C.textSub, textTransform: 'uppercase', marginBottom: '6px' }}>Gmail Limit</label>
+                  <input required type="number" min="1" max="100" value={addUserLimit} onChange={e => setAddUserLimit(parseInt(e.target.value) || 1)}
+                    style={{ width: '100%', height: '38px', padding: '0 12px', border: `1px solid ${C.border}`, borderRadius: '8px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" disabled={addUserLoading} style={{
+                marginTop: '8px', width: '100%', height: '40px', background: C.green, color: '#fff',
+                border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'inherit'
+              }}>
+                {addUserLoading ? 'Creating Developer...' : 'Create Developer Profile'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }

@@ -443,6 +443,52 @@ export default {
         return json({ success: true, reassigned: count });
       }
 
+      // ADMIN: Create User/Developer
+      // POST /api/admin/create-user
+      if (path === "/api/admin/create-user" && request.method === "POST") {
+        if (!isAdmin()) return json({ error: "Unauthorized" }, 401);
+        const body = await request.json();
+        const { email, password, tier, gmail_limit } = body;
+        if (!email || !password) {
+          return json({ error: "Email and password are required" }, 400);
+        }
+
+        // Create auth user using Supabase auth.admin API
+        const { data: authData, error: authErr } = await supabase.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true
+        });
+
+        if (authErr) {
+          return json({ error: authErr.message }, 400);
+        }
+
+        const userId = authData.user.id;
+
+        // Upsert profile in profiles table
+        const { error: profileErr } = await supabase
+          .from("profiles")
+          .upsert({
+            id: userId,
+            email,
+            tier: tier || "free",
+            gmail_limit: parseInt(gmail_limit) || 1,
+            updated_at: new Date().toISOString()
+          }, { onConflict: "email" });
+
+        if (profileErr) {
+          return json({ error: `User created, but profile upsert failed: ${profileErr.message}` }, 500);
+        }
+
+        // Trigger auto-assign gmails for the new user
+        ctx.waitUntil(supabase.rpc("auto_assign_gmails", { p_user_id: userId }));
+
+        await tgAlert(TG_TOKEN, TG_CHAT_ID, `➕ <b>IDEpro</b>: Admin created new user: <code>${email}</code> (Tier: ${tier})`);
+
+        return json({ success: true, user_id: userId });
+      }
+
       // ══════════════════════════════════════════════════════════════════
       // LEGACY ROUTES (preserved from v2)
       // ══════════════════════════════════════════════════════════════════
