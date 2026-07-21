@@ -8,5 +8,9 @@
   ],
   "vars": {
     "SUPABASE_URL": "https://rjegmurqhkglyethgauq.supabase.co"
+  },
+  "assets": {
+    "directory": "../web_controller/web/dist",
+    "binding": "ASSETS"
   }
 }

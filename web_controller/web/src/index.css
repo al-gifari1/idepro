@@ -1,0 +1,59 @@
+/* IDEpro — Global CSS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green:      #10B981;
+  --green-bg:   #F0FDF4;
+  --green-dim:  #D1FAE5;
+  --bg:         #F8FAFB;
+  --white:      #FFFFFF;
+  --border:     #E2E8F0;
+  --border-sub: #F1F5F9;
+  --text:       #0F172A;
+  --text-sub:   #475569;
+  --text-muted: #94A3B8;
+  --amber:      #F59E0B;
+  --amber-bg:   #FFFBEB;
+  --red:        #EF4444;
+  --blue:       #3B82F6;
+  --blue-bg:    #EFF6FF;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  color-scheme: light;
+}
+
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font-family: inherit; }
+img { max-width: 100%; }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Utilities */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+@media (max-width: 768px) { .container { padding: 0 16px; } }
+
+/* Responsive utility helpers */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* Animations */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn 0.3s ease forwards; }

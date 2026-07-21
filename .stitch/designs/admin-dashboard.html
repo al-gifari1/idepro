@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IDEpro Admin Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#006c49",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdad7",
+                        "primary-fixed": "#6ffbbe",
+                        "on-tertiary-container": "#711419",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#00422b",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-bright": "#f8fafb",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#3e4943",
+                        "surface": "#f8fafb",
+                        "primary-container": "#10b981",
+                        "surface-container": "#eceeef",
+                        "on-background": "#191c1d",
+                        "surface-container-low": "#f2f4f5",
+                        "tertiary-container": "#fc7c78",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#3c4a42",
+                        "outline-variant": "#bbcabf",
+                        "surface-container-high": "#e6e8e9",
+                        "on-tertiary-fixed-variant": "#842225",
+                        "secondary-fixed-dim": "#bdcac1",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d8dadb",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#d9e6dd",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary-fixed": "#131e19",
+                        "inverse-on-surface": "#eff1f2",
+                        "on-secondary-container": "#5b6760",
+                        "secondary": "#55615a",
+                        "on-primary-fixed-variant": "#005236",
+                        "primary": "#006c49",
+                        "inverse-primary": "#4edea3",
+                        "on-surface": "#191c1d",
+                        "primary-fixed-dim": "#4edea3",
+                        "on-primary-fixed": "#002113",
+                        "on-tertiary-fixed": "#410005",
+                        "background": "#f8fafb",
+                        "tertiary": "#a43a3a",
+                        "secondary-fixed": "#d9e6dd",
+                        "tertiary-fixed-dim": "#ffb3af",
+                        "outline": "#6c7a71"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "stack-loose": "32px",
+                        "element-gap": "16px",
+                        "stack-tight": "8px",
+                        "margin-page": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-base": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-xl": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-base": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFB; }
+        .material-symbols-outlined { font-size: 20px; vertical-align: middle; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .active-nav-border { border-left: 3px solid #10B981; }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- Fixed SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[240px] bg-white border-r border-outline-variant flex flex-col z-50">
+<!-- Logo Section -->
+<div class="h-[56px] px-6 flex items-center border-b border-outline-variant">
+<img alt="IDEpro Admin" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaRii7gDVUBUgbe7lbDEE5vitU2duBbJ3hn7kCd_JQFuFjf7CmfWDwxRcxDwR6G62E7BrFyQVGrzfNGrYRaLem0M5_9PYpagHg5a15lOKsDADNo_brjGMv3dc09E1hXTE7_B0BMLgq2iRB4j_3fr7LyLg-jIld_PtWdpxtKsyq_4xIPL5aBekYNoX9FgwDk-roxD_U3MA0tFNrI_USP8TZ7Ye2Poxrsg3sA8k_BMTACQ9vKP2hzfdrr5bVjg96mwoiXj_fy12k4t0"/>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 py-4 flex flex-col gap-1 overflow-y-auto scrollbar-hide">
+<!-- Dashboard (Active State Mapping) -->
+<a class="flex items-center gap-3 px-6 py-2.5 bg-[#F0FDF4] active-nav-border text-primary font-semibold transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-body-base font-body-base">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-2.5 text-on-surface-variant hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="text-body-base font-body-base">Developer DB</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-2.5 text-on-surface-variant hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+<span class="text-body-base font-body-base">Live Sessions</span>
+</a>
+<a class="flex items-center justify-between px-6 py-2.5 text-on-surface-variant hover:bg-surface-container transition-colors duration-150" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="text-body-base font-body-base">Gmail Pool</span>
+</div>
+<span class="bg-primary-container text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">3</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-2.5 text-on-surface-variant hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="router">router</span>
+<span class="text-body-base font-body-base">Edge Gateway</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-2.5 text-on-surface-variant hover:bg-surface-container transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-body-base font-body-base">Audit Logs</span>
+</a>
+</nav>
+<!-- Footer Section -->
+<div class="p-4 border-t border-outline-variant flex flex-col gap-2">
+<a class="flex items-center gap-3 px-2 py-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-body-base font-body-base">Settings</span>
+</a>
+<div class="flex items-center gap-3 px-2 py-2">
+<img class="w-8 h-8 rounded-full bg-surface-container-high object-cover" data-alt="A professional headshot of a developer administrator named Al Gifari. He has a friendly yet professional expression, clean-cut appearance, and is positioned against a neutral, high-key studio background that matches the minimalist emerald green and white UI aesthetic of the IDEpro platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMyD9PseliPmnQPM6xyGAjktqG2C_0AzVorLTvDKKjlJjTCIM9sHKQTx2W0oYxqAb-lyz0zEVNoLkDNPRgpdo7zpfLeFonJnm-Vb_LpGmNhkKMkaL3NBwvMGoTPHVQwBhffmTY8ycxOHrvY-a2kCnGt-25Bh0EPoAZqyrofrh5hQzL_u0wQPI3akZm99nUErI1beR3YV7Eu0ZpBDoPMZ-Vw64dnTCejJgi343VZ8m0ufIOCdk68l2TdYv7SmaCObY_N2hzY3sL2cA"/>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm font-bold">Al Gifari</span>
+<span class="text-[10px] text-on-surface-variant">Enterprise Admin</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-[240px] min-h-screen flex flex-col">
+<!-- Sticky TopAppBar -->
+<header class="sticky top-0 right-0 h-[56px] w-full bg-white border-b border-outline-variant z-40 px-container-padding flex items-center justify-between">
+<div class="flex items-center gap-8">
+<h1 class="text-headline-md font-headline-md text-on-surface">Developer Database</h1>
+<div class="relative w-[320px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full h-9 pl-10 pr-4 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:outline-none focus:border-primary transition-all" placeholder="Search developers, emails..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<button class="bg-[#10B981] hover:brightness-95 text-white px-4 py-2 rounded-lg text-label-sm font-bold flex items-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="sync">sync</span>
+                    Sync Data
+                </button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A minimalist avatar representation for a premium user. The image uses a clean, vector-style aesthetic with a palette of emerald green and soft grays, mirroring the professional developer environment of IDEpro Admin Command Center." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjbRMAcU-Sl9pKeLRvY_GliXyzr60vWvL6RbPvDKrpXVxQNmoYJrUTqYRh5ZcLcOya02izEDf2tHvOftMomd4lzZ0Gaxlpx8BSNMsnvpDgbYMsqNiKM5A1XANAqdGJFAwrxXWjbSkeGOg0U6s6Ajs9kiuvGkTOS2guks9hJvIKcvvtLC3ZPY0LQjnmGDXYlh3iptzuLCutQbuiueGzw8DzaMMghWCJjvFtVlrJ9-O6o1HvU8gUspvW631aO-OrXN6Atz3f1KUeays"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<div class="p-8 flex flex-col gap-stack-loose">
+<!-- Filter Bar -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="px-4 py-1.5 bg-[#F0FDF4] text-primary border border-primary/20 rounded-full text-label-sm font-bold">All Tiers</button>
+<button class="px-4 py-1.5 bg-white text-on-surface-variant border border-outline-variant rounded-full text-label-sm font-medium hover:bg-surface-container-low transition-colors">Free</button>
+<button class="px-4 py-1.5 bg-white text-on-surface-variant border border-outline-variant rounded-full text-label-sm font-medium hover:bg-surface-container-low transition-colors">Pro</button>
+<button class="px-4 py-1.5 bg-white text-on-surface-variant border border-outline-variant rounded-full text-label-sm font-medium hover:bg-surface-container-low transition-colors">Premium</button>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white border border-outline-variant rounded-lg text-label-sm font-medium hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export CSV
+                    </button>
+<button class="w-9 h-9 flex items-center justify-center bg-white border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[18px]">view_column</span>
+</button>
+</div>
+</div>
+<!-- Stats Row (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="bg-white p-container-padding rounded-lg border border-outline-variant">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase">Total Developers</p>
+<p class="text-headline-xl font-headline-xl text-on-surface">247</p>
+<div class="mt-4 flex items-center gap-1 text-[12px] text-primary">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+<span>+12.5% vs last month</span>
+</div>
+</div>
+<div class="bg-white p-container-padding rounded-lg border border-outline-variant">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase">Online Now</p>
+<div class="flex items-center gap-2">
+<p class="text-headline-xl font-headline-xl text-on-surface">18</p>
+<span class="w-2.5 h-2.5 rounded-full bg-[#10B981] animate-pulse"></span>
+</div>
+<p class="mt-4 text-[12px] text-on-surface-variant">Active sessions globally</p>
+</div>
+<div class="bg-white p-container-padding rounded-lg border border-outline-variant">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase">Gmail Pool Active</p>
+<p class="text-headline-xl font-headline-xl text-on-surface">3</p>
+<div class="mt-4 flex items-center gap-1 text-[12px] text-tertiary">
+<span class="material-symbols-outlined text-[14px]">error</span>
+<span>2 accounts pending sync</span>
+</div>
+</div>
+<div class="bg-white p-container-padding rounded-lg border border-outline-variant">
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase">Monthly Revenue</p>
+<p class="text-headline-xl font-headline-xl text-on-surface">$4,820</p>
+<div class="mt-4 h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-[#10B981] w-[65%]"></div>
+</div>
+</div>
+</div>
+<!-- Data Table Section -->
+<div class="bg-white rounded-lg border border-outline-variant overflow-hidden flex flex-col">
+<div class="px-container-padding py-4 flex items-center justify-between border-b border-outline-variant">
+<div class="flex items-center gap-2">
+<h2 class="text-headline-md font-headline-md">Developers (247)</h2>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-label-sm font-label-sm text-on-surface-variant">Page 1 of 12</span>
+<div class="flex items-center border border-outline-variant rounded-lg divide-x divide-outline-variant">
+<button class="p-1.5 hover:bg-surface-container-low disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1.5 hover:bg-surface-container-low">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full border-collapse">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-6 py-3 text-left text-label-caps font-label-caps text-[#94A3B8] uppercase tracking-wider">Developer Email</th>
+<th class="px-6 py-3 text-left text-label-caps font-label-caps text-[#94A3B8] uppercase tracking-wider">Subscription Tier</th>
+<th class="px-6 py-3 text-left text-label-caps font-label-caps text-[#94A3B8] uppercase tracking-wider">Gmail Limit</th>
+<th class="px-6 py-3 text-left text-label-caps font-label-caps text-[#94A3B8] uppercase tracking-wider">Status</th>
+<th class="px-6 py-3 text-left text-label-caps font-label-caps text-[#94A3B8] uppercase tracking-wider">Last Active</th>
+<th class="px-6 py-3 text-right text-label-caps font-label-caps text-[#94A3B8] uppercase tracking-wider">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface transition-colors duration-150 group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container/10 flex items-center justify-center text-primary font-bold text-[12px]">AG</div>
+<span class="text-body-base font-body-base text-on-surface font-medium">gifari@gmail.com</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 bg-[#F0FDF4] text-primary text-[10px] font-bold rounded uppercase tracking-wide">PRO</span>
+</td>
+<td class="px-6 py-4 text-body-base text-on-surface-variant">3 slots</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+<span class="text-label-sm font-label-sm text-on-surface">ONLINE</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-base text-on-surface-variant">2 min ago</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary text-label-sm font-bold hover:underline">Cycle Tier</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface transition-colors duration-150 group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant font-bold text-[12px]">U2</div>
+<span class="text-body-base font-body-base text-on-surface font-medium">user2@test.com</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 bg-surface-container text-on-surface-variant text-[10px] font-bold rounded uppercase tracking-wide">FREE</span>
+</td>
+<td class="px-6 py-4 text-body-base text-on-surface-variant">1 slot</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">OFFLINE</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-base text-on-surface-variant">3h ago</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary text-label-sm font-bold hover:underline">Cycle Tier</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface transition-colors duration-150 group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-[12px]">D3</div>
+<span class="text-body-base font-body-base text-on-surface font-medium">dev3@email.com</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded uppercase tracking-wide">PREMIUM</span>
+</td>
+<td class="px-6 py-4 text-body-base text-on-surface-variant">5 slots</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+<span class="text-label-sm font-label-sm text-on-surface">ONLINE</span>
+</div>
+</td>
+<td class="px-6 py-4 text-body-base text-on-surface-variant">5 min ago</td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary text-label-sm font-bold hover:underline">Cycle Tier</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Dashboard Visual Element -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<div class="bg-white rounded-lg border border-outline-variant p-container-padding h-64 relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="text-label-caps font-label-caps text-on-surface-variant uppercase mb-4">Edge Gateway Performance</h3>
+<div class="flex items-end gap-2 h-32">
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[40%] transition-all hover:bg-primary-container/40"></div>
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[60%] transition-all hover:bg-primary-container/40"></div>
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[35%] transition-all hover:bg-primary-container/40"></div>
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[80%] transition-all hover:bg-primary-container/40"></div>
+<div class="w-full bg-primary-container/20 rounded-t-sm h-[55%] transition-all hover:bg-primary-container/40"></div>
+<div class="w-full bg-[#10B981] rounded-t-sm h-[95%] transition-all hover:brightness-110"></div>
+</div>
+<p class="mt-4 text-body-sm text-on-surface-variant">Latency optimized: <span class="font-bold text-primary">24ms average</span></p>
+</div>
+</div>
+<div class="bg-white rounded-lg border border-outline-variant p-container-padding h-64 flex flex-col items-center justify-center text-center gap-3">
+<div class="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[32px]">security</span>
+</div>
+<div>
+<h3 class="text-headline-md font-headline-md">Security Overview</h3>
+<p class="text-body-sm text-on-surface-variant max-w-[280px]">No critical vulnerabilities detected in the last 24 hours. All gateways are operational.</p>
+</div>
+<button class="mt-2 text-primary text-label-sm font-bold border border-primary/20 px-4 py-1.5 rounded-lg hover:bg-[#F0FDF4] transition-colors">Run Full Audit</button>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-[0.98]');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-[0.98]');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-[0.98]');
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-2', 'ring-primary/20');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-2', 'ring-primary/20');
+        });
+    </script>
+</body></html>

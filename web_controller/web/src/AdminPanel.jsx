@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import {
   LayoutDashboard, Users, Radio, Mail, Server, ClipboardList,
   Settings, Bell, Search, RefreshCw, ChevronRight, ChevronLeft,
   TrendingUp, TrendingDown, Wifi, WifiOff, Trash2, ExternalLink,
-  Download, Filter, Shield, Zap, AlertCircle, CheckCircle2,
-  Menu, X, SlidersHorizontal
+  Download, Shield, Zap, AlertCircle, CheckCircle2,
+  Menu, X
 } from 'lucide-react';
 
 const supabase = createClient(
@@ -13,7 +13,7 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqZWdtdXJxaGtnbHlldGhnYXVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5OTIxMzYsImV4cCI6MjA5OTU2ODEzNn0.6Qf0ZDlU_bSBPCXG_4lvs5rZFBYndjfDJh3_k3K6tYw'
 );
 
-const WORKER_URL = 'https://idepro-edge-gateway.ai-gifari-n8n.workers.dev';
+const WORKER_URL = 'https://idepro.ai-gifari-n8n.workers.dev';
 const ADMIN_KEY  = import.meta.env.VITE_ADMIN_SECRET_KEY || 'idepro-admin-secret';
 
 // ── Design Tokens ──────────────────────────────────────────────────────────────
@@ -74,7 +74,7 @@ const Pill = ({ children, variant = 'green' }) => {
   );
 };
 
-// ── Stat Card — adapts layout for mobile ──────────────────────────────────────
+// ── Stat Card ─────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, sub, icon: Icon, variant = 'default', trend, mobile }) => (
   <div style={{
     background: C.white, border: `1px solid ${C.border}`,
@@ -84,13 +84,12 @@ const StatCard = ({ label, value, sub, icon: Icon, variant = 'default', trend, m
     display: 'flex', flexDirection: mobile ? 'row' : 'column',
     alignItems: mobile ? 'center' : 'flex-start',
     justifyContent: mobile ? 'space-between' : 'flex-start',
-    gap: mobile ? 0 : 0,
   }}>
     <div style={{ flex: 1 }}>
       <div style={{ fontSize: '11px', fontWeight: 600, color: C.textMuted, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '8px' }}>
         {label}
       </div>
-      <div style={{ fontSize: mobile ? '28px' : '28px', fontWeight: 700, color: variant === 'green' ? C.green : C.text, lineHeight: 1, marginBottom: sub ? '4px' : 0 }}>
+      <div style={{ fontSize: '28px', fontWeight: 700, color: variant === 'green' ? C.green : C.text, lineHeight: 1, marginBottom: sub ? '4px' : 0 }}>
         {value}
       </div>
       {sub && <div style={{ fontSize: '12px', color: C.textMuted }}>{sub}</div>}
@@ -120,7 +119,7 @@ const TIER_PILL = {
   premium: { label: 'PREMIUM', variant: 'blue'   },
 };
 
-// ── Mobile Developer Card (replaces table row on mobile) ──────────────────────
+// ── Mobile Developer Card ─────────────────────────────────────────────────────
 const DevCard = ({ p, online, handleCycleTier }) => {
   const tier = TIER_PILL[p.tier] || TIER_PILL.free;
   const initials = p.email?.slice(0, 2).toUpperCase() || '??';
@@ -284,7 +283,6 @@ export default function AdminCommandCenter() {
     return () => window.removeEventListener('message', h);
   }, []);
 
-  // Close drawer on nav click (mobile)
   const handleNavClick = (id) => { setActiveNav(id); setDrawerOpen(false); };
 
   const filteredProfiles  = profiles.filter(p => {
@@ -304,7 +302,6 @@ export default function AdminCommandCenter() {
     { id: 'logs',      label: 'Audit Logs',   icon: ClipboardList   },
   ];
 
-  // ── Sidebar nav (shared between desktop + mobile drawer) ──────────────────
   const NavItems = ({ onNavClick }) => (
     <nav style={{ flex: 1, padding: '12px', overflowY: 'auto' }}>
       <div style={{ fontSize: '10px', fontWeight: 700, color: C.textMuted, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '8px 8px 4px', marginBottom: '2px' }}>Platform</div>
@@ -437,19 +434,16 @@ export default function AdminCommandCenter() {
           display: 'flex', alignItems: 'center', padding: '0 16px', gap: '12px',
           position: 'sticky', top: 0, zIndex: 50,
         }}>
-          {/* Hamburger (mobile only) */}
           {isMobile && (
             <button onClick={() => setDrawerOpen(true)} style={{ border: 'none', background: 'none', cursor: 'pointer', padding: '4px', color: C.textSub, display: 'flex', flexShrink: 0 }}>
               <Menu size={22} />
             </button>
           )}
 
-          {/* Title */}
           <div style={{ fontSize: isMobile ? '16px' : '15px', fontWeight: 700, color: isMobile ? C.green : C.text, whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>
             {isMobile ? 'IDEpro' : navItems.find(n => n.id === activeNav)?.label || 'Dashboard'}
           </div>
 
-          {/* Search — hidden on mobile to save space */}
           {!isMobile && (
             <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
               <div style={{ position: 'relative', width: '320px' }}>
@@ -471,7 +465,6 @@ export default function AdminCommandCenter() {
           )}
 
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {/* Worker status dot */}
             {!isMobile && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 600 }}>
                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: workerStatus === 'online' ? C.green : workerStatus === 'checking' ? C.amber : C.red }} />
@@ -498,16 +491,14 @@ export default function AdminCommandCenter() {
           {/* ══ DASHBOARD ═══════════════════════════════════════════════ */}
           {activeNav === 'dashboard' && (
             <>
-              {/* Mobile: page title + sync row */}
               {isMobile && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                   <div style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.01em' }}>Overview</div>
                 </div>
               )}
 
-              {/* Stats — row on desktop, stack on mobile */}
               <div style={{
-                display: isMobile ? 'flex' : 'flex',
+                display: 'flex',
                 flexDirection: isMobile ? 'column' : 'row',
                 gap: '12px', marginBottom: '20px'
               }}>
@@ -522,7 +513,6 @@ export default function AdminCommandCenter() {
                   trend={{ dir: 'up', val: '+8.2%', label: 'vs last month' }} />
               </div>
 
-              {/* Chart + Security (hidden on mobile to keep it clean) */}
               {!isMobile && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
                   <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '8px', padding: '20px' }}>
@@ -550,7 +540,6 @@ export default function AdminCommandCenter() {
                 </div>
               )}
 
-              {/* Developer list — mobile cards, desktop table */}
               <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 600, fontSize: isMobile ? '16px' : '14px' }}>
                   {isMobile ? 'Active Developers' : 'Recent Developers'}
@@ -575,7 +564,6 @@ export default function AdminCommandCenter() {
                 <DeveloperTable pagedProfiles={profiles.slice(0, 5)} sessions={sessions} handleCycleTier={handleCycleTier} compact />
               )}
 
-              {/* Mobile: Edge Performance chart */}
               {isMobile && (
                 <div style={{ marginTop: '20px' }}>
                   <div style={{ fontWeight: 600, fontSize: '16px', marginBottom: '12px' }}>Edge Performance</div>
@@ -600,7 +588,6 @@ export default function AdminCommandCenter() {
           {/* ══ DEVELOPER DB ════════════════════════════════════════════ */}
           {activeNav === 'users' && (
             <>
-              {/* Mobile search bar (inline) */}
               {isMobile && (
                 <div style={{ position: 'relative', marginBottom: '12px' }}>
                   <Search size={14} color={C.textMuted} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -611,7 +598,6 @@ export default function AdminCommandCenter() {
                 </div>
               )}
 
-              {/* Filter Chips */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
                 {['all', 'free', 'pro', 'premium'].map(t => (
                   <button key={t} onClick={() => { setTierFilter(t); setCurrentPage(1); }} style={{
@@ -633,7 +619,6 @@ export default function AdminCommandCenter() {
                 )}
               </div>
 
-              {/* Cards on mobile, table on desktop */}
               {isMobile ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {pagedProfiles.map((p, i) => (
@@ -642,7 +627,6 @@ export default function AdminCommandCenter() {
                   {pagedProfiles.length === 0 && (
                     <div style={{ textAlign: 'center', padding: '40px', color: C.textMuted, background: C.white, borderRadius: '12px', border: `1px solid ${C.border}` }}>No results</div>
                   )}
-                  {/* Pagination */}
                   {totalPages > 1 && (
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '8px' }}>
                       <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage <= 1}
@@ -731,7 +715,7 @@ export default function AdminCommandCenter() {
           {/* ══ GMAIL POOL ══════════════════════════════════════════════ */}
           {activeNav === 'gmail' && (
             <div>
-              <div style={{ display: isMobile ? 'flex' : 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '12px', marginBottom: '16px' }}>
                 <StatCard mobile={isMobile} label="Total Accounts" value={gmailPool.length} icon={Mail} />
                 <StatCard mobile={isMobile} label="Active" value={gmailPool.filter(g=>g.status==='active').length} icon={CheckCircle2} variant="green" />
                 <StatCard mobile={isMobile} label="Rate Limited" value={gmailPool.filter(g=>g.status==='rate_limited').length} icon={AlertCircle} />
@@ -750,103 +734,62 @@ export default function AdminCommandCenter() {
                     background: 'rgba(66,133,244,0.1)', border: '1px solid rgba(66,133,244,0.4)', color: '#4285F4',
                     display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'inherit', whiteSpace: 'nowrap',
                   }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                    {oauthLoading ? 'Opening...' : 'Login with Google'}
+                    <Mail size={14} /> {oauthLoading ? 'Authenticating...' : 'Sign In with Google'}
                   </button>
-                  {!isMobile && (
-                    <button onClick={handleReassignAll} style={{ height: '38px', padding: '0 14px', border: `1px solid ${C.border}`, borderRadius: '8px', background: C.white, cursor: 'pointer', fontSize: '12px', color: C.textSub, fontFamily: 'inherit' }}>
-                      ↺ Reassign All
-                    </button>
-                  )}
                 </div>
               </div>
 
-              {/* Gmail list */}
-              {isMobile ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {gmailPool.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '40px', color: C.textMuted, background: C.white, borderRadius: '12px', border: `1px solid ${C.border}` }}>
-                      <Mail size={28} style={{ display: 'block', margin: '0 auto 10px', opacity: 0.3 }} />
-                      No accounts in pool
-                    </div>
-                  ) : gmailPool.map(g => (
-                    <div key={g.id} style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '16px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: '13px' }}>{g.gmail}</div>
-                          {g.display_name && <div style={{ fontSize: '11px', color: C.textMuted }}>{g.display_name}</div>}
-                        </div>
-                        {g.status === 'active'       && <Pill variant="green">● Active</Pill>}
-                        {g.status === 'rate_limited' && <Pill variant="amber">⚡ Limited</Pill>}
-                        {g.status === 'expired'      && <Pill variant="red">✗ Expired</Pill>}
-                        {g.status === 'disabled'     && <Pill variant="grey">○ Disabled</Pill>}
-                      </div>
-                      <div style={{ fontSize: '12px', color: C.textMuted, marginBottom: '12px' }}>
-                        {g.requests_today || 0} req today · Expires {g.token_expires_at ? new Date(g.token_expires_at).toLocaleTimeString() : '—'}
-                      </div>
-                      <div style={{ display: 'flex', gap: '8px', paddingTop: '10px', borderTop: `1px solid ${C.borderSub}` }}>
-                        <button onClick={() => handleToggleGmail(g.id, g.status)} style={{ flex: 1, padding: '7px', border: `1px solid ${C.border}`, borderRadius: '8px', background: C.white, cursor: 'pointer', fontSize: '12px', color: g.status === 'active' ? C.green : C.textSub, fontFamily: 'inherit', fontWeight: 500 }}>
-                          {g.status === 'active' ? 'Disable' : 'Enable'}
-                        </button>
-                        <button onClick={() => handleRemoveGmail(g.id, g.gmail)} style={{ padding: '7px 12px', border: `1px solid ${C.border}`, borderRadius: '8px', background: C.white, cursor: 'pointer', color: C.red, display: 'flex', alignItems: 'center' }}>
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: '8px', overflow: 'hidden' }}>
-                  <div style={{ padding: '16px 20px', borderBottom: `1px solid ${C.border}`, fontWeight: 600, fontSize: '14px' }}>Gmail Pool ({gmailPool.length})</div>
-                  {gmailPool.length === 0 ? (
-                    <div style={{ padding: '48px', textAlign: 'center', color: C.textMuted }}>
-                      <Mail size={28} style={{ display: 'block', margin: '0 auto 10px', opacity: 0.3 }} />
-                      No accounts. Add above.
-                    </div>
-                  ) : (
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                      <thead>
-                        <tr style={{ borderBottom: `1px solid ${C.border}` }}>
-                          {['Gmail Account', 'Status', 'Req Today', 'Token Expires', 'Last Used', 'Actions'].map(h => (
-                            <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {gmailPool.map(g => (
-                          <tr key={g.id} style={{ borderBottom: `1px solid ${C.borderSub}` }}
-                            onMouseEnter={e => e.currentTarget.style.background = C.bg}
-                            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                            <td style={{ padding: '12px 16px', fontWeight: 500 }}>
-                              <div>{g.gmail}</div>
-                              {g.display_name && <div style={{ fontSize: '11px', color: C.textMuted }}>{g.display_name}</div>}
-                            </td>
-                            <td style={{ padding: '12px 16px' }}>
-                              {g.status === 'active'       && <Pill variant="green">● Active</Pill>}
-                              {g.status === 'rate_limited' && <Pill variant="amber">⚡ Limited</Pill>}
-                              {g.status === 'expired'      && <Pill variant="red">✗ Expired</Pill>}
-                              {g.status === 'disabled'     && <Pill variant="grey">○ Disabled</Pill>}
-                            </td>
-                            <td style={{ padding: '12px 16px', color: C.textSub }}>{g.requests_today || 0}</td>
-                            <td style={{ padding: '12px 16px', color: C.textMuted, fontSize: '12px' }}>{g.token_expires_at ? new Date(g.token_expires_at).toLocaleTimeString() : '—'}</td>
-                            <td style={{ padding: '12px 16px', color: C.textMuted, fontSize: '12px' }}>{g.last_used_at ? new Date(g.last_used_at).toLocaleString() : '—'}</td>
-                            <td style={{ padding: '12px 16px' }}>
-                              <div style={{ display: 'flex', gap: '6px' }}>
-                                <button onClick={() => handleToggleGmail(g.id, g.status)} style={{ padding: '5px 10px', border: `1px solid ${C.border}`, borderRadius: '6px', background: C.white, cursor: 'pointer', fontSize: '11px', color: g.status === 'active' ? C.green : C.textSub, fontFamily: 'inherit' }}>
-                                  {g.status === 'active' ? 'Disable' : 'Enable'}
-                                </button>
-                                <button onClick={() => handleRemoveGmail(g.id, g.gmail)} style={{ padding: '5px 8px', border: `1px solid ${C.border}`, borderRadius: '6px', background: C.white, cursor: 'pointer', color: C.red }}>
-                                  <Trash2 size={13} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
+              {/* Pool table */}
+              <div style={{ background: C.white, border: `1px solid ${C.border}`, borderRadius: isMobile ? '12px' : '8px', overflow: 'hidden' }}>
+                <div style={{ padding: '16px 20px', borderBottom: `1px solid ${C.border}`, fontWeight: 600, fontSize: '14px' }}>Gmail Pool ({gmailPool.length})</div>
+                {gmailPool.length === 0 ? (
+                  <div style={{ padding: '48px', textAlign: 'center', color: C.textMuted }}>
+                    <Mail size={28} style={{ display: 'block', margin: '0 auto 10px', opacity: 0.3 }} />
+                    No accounts. Add above.
+                  </div>
+                ) : (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                    <thead>
+                      <tr style={{ borderBottom: `1px solid ${C.border}` }}>
+                        {['Gmail Account', 'Status', 'Req Today', 'Token Expires', 'Last Used', 'Actions'].map(h => (
+                          <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '11px', fontWeight: 600, color: C.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
                         ))}
-                      </tbody>
-                    </table>
-                  )}
-                </div>
-              )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {gmailPool.map(g => (
+                        <tr key={g.id} style={{ borderBottom: `1px solid ${C.borderSub}` }}
+                          onMouseEnter={e => e.currentTarget.style.background = C.bg}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                          <td style={{ padding: '12px 16px', fontWeight: 500 }}>
+                            <div>{g.gmail}</div>
+                            {g.display_name && <div style={{ fontSize: '11px', color: C.textMuted }}>{g.display_name}</div>}
+                          </td>
+                          <td style={{ padding: '12px 16px' }}>
+                            {g.status === 'active'       && <Pill variant="green">● Active</Pill>}
+                            {g.status === 'rate_limited' && <Pill variant="amber">⚡ Limited</Pill>}
+                            {g.status === 'expired'      && <Pill variant="red">✗ Expired</Pill>}
+                            {g.status === 'disabled'     && <Pill variant="grey">○ Disabled</Pill>}
+                          </td>
+                          <td style={{ padding: '12px 16px', color: C.textSub }}>{g.requests_today || 0}</td>
+                          <td style={{ padding: '12px 16px', color: C.textMuted, fontSize: '12px' }}>{g.token_expires_at ? new Date(g.token_expires_at).toLocaleTimeString() : '—'}</td>
+                          <td style={{ padding: '12px 16px', color: C.textMuted, fontSize: '12px' }}>{g.last_used_at ? new Date(g.last_used_at).toLocaleString() : '—'}</td>
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <button onClick={() => handleToggleGmail(g.id, g.status)} style={{ padding: '5px 10px', border: `1px solid ${C.border}`, borderRadius: '6px', background: C.white, cursor: 'pointer', fontSize: '11px', color: g.status === 'active' ? C.green : C.textSub, fontFamily: 'inherit' }}>
+                                {g.status === 'active' ? 'Disable' : 'Enable'}
+                              </button>
+                              <button onClick={() => handleRemoveGmail(g.id, g.gmail)} style={{ padding: '5px 8px', border: `1px solid ${C.border}`, borderRadius: '6px', background: C.white, cursor: 'pointer', color: C.red }}>
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
             </div>
           )}
 
@@ -949,7 +892,6 @@ function DeveloperTable({ pagedProfiles, sessions, handleCycleTier, currentPage,
           <tbody>
             {pagedProfiles.map((p, i) => {
               const online   = sessions.some(s => s.email === p.email);
-              const tier     = TIER_PILL[p.tier] || TIER_PILL.free;
               const initials = p.email?.slice(0, 2).toUpperCase() || '?';
               return (
                 <tr key={p.id || i} style={{ borderBottom: '1px solid #F1F5F9' }}
@@ -963,7 +905,7 @@ function DeveloperTable({ pagedProfiles, sessions, handleCycleTier, currentPage,
                       <span style={{ fontWeight: 500 }}>{p.email}</span>
                     </div>
                   </td>
-                  <td style={{ padding: '12px 16px' }}><Pill variant={tier.variant}>{tier.label}</Pill></td>
+                  <td style={{ padding: '12px 16px' }}><Pill variant={TIER_PILL[p.tier]?.variant || 'grey'}>{TIER_PILL[p.tier]?.label}</Pill></td>
                   <td style={{ padding: '12px 16px', color: '#475569' }}>{p.gmail_limit || 1} slots</td>
                   <td style={{ padding: '12px 16px' }}><Pill variant={online ? 'green' : 'grey'}>{online ? '● ONLINE' : '○ OFFLINE'}</Pill></td>
                   <td style={{ padding: '12px 16px', color: '#94A3B8', fontSize: '12px' }}>{p.updated_at ? new Date(p.updated_at).toLocaleString() : '—'}</td>

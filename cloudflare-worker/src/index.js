@@ -98,6 +98,25 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    // Route all non-API / non-health requests to static assets (SPA routing)
+    const isApiRoute = path.startsWith("/api/");
+    const isHealthCheck = path === "/health";
+    const isJsonHome = path === "/" && (request.headers.get("accept") || "").includes("application/json");
+
+    if (!isApiRoute && !isHealthCheck && !isJsonHome) {
+      try {
+        let assetResponse = await env.ASSETS.fetch(request);
+        if (assetResponse.status === 404) {
+          // Fallback to index.html for React Router SPA
+          const spaUrl = new URL("/index.html", request.url);
+          assetResponse = await env.ASSETS.fetch(new Request(spaUrl, request));
+        }
+        return assetResponse;
+      } catch (e) {
+        // Fallback for local testing without --assets bound
+      }
+    }
+
     // Config from Cloudflare secrets
     const SUPABASE_URL = env.SUPABASE_URL || "https://rjegmurqhkglyethgauq.supabase.co";
     const SUPABASE_KEY = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY || "";
@@ -107,7 +126,7 @@ export default {
     const G_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET || "";
     const TG_TOKEN     = env.TELEGRAM_BOT_TOKEN || "";
     const TG_CHAT_ID   = env.TELEGRAM_ADMIN_CHAT_ID || "";
-    const WORKER_URL   = "https://idepro-edge-gateway.ai-gifari-n8n.workers.dev";
+    const WORKER_URL   = "https://idepro.ai-gifari-n8n.workers.dev";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
