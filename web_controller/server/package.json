@@ -1,0 +1,11 @@
+{
+  "name": "idepro-sync-server",
+  "version": "1.0.0",
+  "description": "Local test server for IDEpro remote account syncing",
+  "main": "server.mjs",
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}

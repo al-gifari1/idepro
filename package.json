@@ -1,0 +1,19 @@
+{
+  "name": "idepro-workspace",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node start-servers.mjs",
+    "worker:dev": "npm --prefix cloudflare-worker run dev",
+    "worker:deploy": "npm --prefix cloudflare-worker run deploy",
+    "supabase:login": "npx supabase login",
+    "supabase:link": "npx supabase link",
+    "supabase:start": "npx supabase start",
+    "supabase:stop": "npx supabase stop",
+    "supabase:status": "npx supabase status",
+    "supabase:db-push": "npx supabase db push",
+    "supabase:functions-serve": "npx supabase functions serve",
+    "supabase:functions-deploy": "npx supabase functions deploy sync-account"
+  }
+}

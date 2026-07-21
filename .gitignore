@@ -1,0 +1,26 @@
+# Binary app build output
+package/
+dist/
+out/
+.vercel/
+.wrangler/
+worker-configuration.d.ts
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment & Secret files
+.env
+.env.local
+.env.production
+*.pem
+
+# Database & temp files
+db.json
+*.log
+supabase/.temp/
+
+# System files
+.DS_Store
+Thumbs.db
