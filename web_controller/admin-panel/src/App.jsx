@@ -21,7 +21,15 @@ import {
   Database,
   Sliders,
   Send,
-  Cpu
+  Cpu,
+  Bot,
+  Plus,
+  Eye,
+  EyeOff,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
+  KeyRound
 } from 'lucide-react';
 import { supabase } from './lib/supabaseClient';
 
@@ -56,6 +64,7 @@ const WORKER_URL = 'https://idepro-edge-gateway.ai-gifari-n8n.workers.dev';
 export default function AdminCommandCenter() {
   const [profiles, setProfiles] = useState([]);
   const [sessions, setSessions] = useState([]);
+  const [aiSessions, setAiSessions] = useState([]);
   const [logs, setLogs] = useState([
     '[SYSTEM] COMMAND CENTER INITIALIZED.',
     '[EDGE] CLOUDFLARE GATEWAY ONLINE.',
@@ -66,9 +75,17 @@ export default function AdminCommandCenter() {
   const [searchQuery, setSearchQuery] = useState('');
   const [tierFilter, setTierFilter] = useState('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeTab, setActiveTab] = useState('users'); // users | edge | logs
+  const [activeTab, setActiveTab] = useState('users'); // users | sessions | edge | ai-pool | logs
   const [editingUser, setEditingUser] = useState(null);
   const [customLimit, setCustomLimit] = useState('1');
+
+  // AI Session Pool state
+  const [showAddSession, setShowAddSession] = useState(false);
+  const [newSession, setNewSession] = useState({ gmail: '', display_name: '', auth_method: 'apikey', credential: '', notes: '' });
+  const [showCredential, setShowCredential] = useState(false);
+  const [addingSession, setAddingSession] = useState(false);
+
+  const ADMIN_KEY = import.meta.env.VITE_ADMIN_SECRET_KEY || 'idepro-admin-secret';
 
   const addLog = (msg) => {
     const ts = new Date().toLocaleTimeString();
@@ -113,11 +130,80 @@ export default function AdminCommandCenter() {
       if (sessErr) throw sessErr;
       setSessions(sess || []);
 
+      // 3. Fetch AI session pool from Edge Worker
+      try {
+        const aiRes = await fetch(`${WORKER_URL}/api/admin/sessions`, {
+          headers: { 'x-admin-key': ADMIN_KEY }
+        });
+        if (aiRes.ok) {
+          const aiData = await aiRes.json();
+          setAiSessions(aiData);
+          addLog(`AI POOL: Loaded ${aiData.length} Google AI sessions.`);
+        }
+      } catch { /* Edge Worker may not be deployed yet */ }
+
       addLog(`DATA SYNC: Loaded ${profs?.length || 0} profiles & ${sess?.length || 0} active sessions.`);
     } catch (e) {
       addLog(`ERR DATA SYNC: ${e.message}`);
     } finally {
       setIsRefreshing(false);
+    }
+  };
+
+  // ── Add new AI session to pool ──────────────────
+  const handleAddAiSession = async () => {
+    if (!newSession.gmail || !newSession.credential) {
+      addLog('ERR: Gmail and credential are required.');
+      return;
+    }
+    setAddingSession(true);
+    try {
+      const res = await fetch(`${WORKER_URL}/api/admin/sessions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
+        body: JSON.stringify(newSession)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to add session');
+      addLog(`AI POOL: Added session for ${newSession.gmail}`);
+      setNewSession({ gmail: '', display_name: '', auth_method: 'apikey', credential: '', notes: '' });
+      setShowAddSession(false);
+      loadData();
+    } catch (e) {
+      addLog(`ERR ADD SESSION: ${e.message}`);
+    } finally {
+      setAddingSession(false);
+    }
+  };
+
+  // ── Toggle AI session status ────────────────────
+  const handleToggleAiSession = async (id, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'disabled' : 'active';
+    try {
+      await fetch(`${WORKER_URL}/api/admin/sessions/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': ADMIN_KEY },
+        body: JSON.stringify({ status: newStatus })
+      });
+      addLog(`AI POOL: Session ${id.slice(0,8)}... -> ${newStatus.toUpperCase()}`);
+      loadData();
+    } catch (e) {
+      addLog(`ERR TOGGLE: ${e.message}`);
+    }
+  };
+
+  // ── Remove AI session ───────────────────────────
+  const handleRemoveAiSession = async (id, gmail) => {
+    if (!confirm(`Remove AI session for ${gmail}?`)) return;
+    try {
+      await fetch(`${WORKER_URL}/api/admin/sessions/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-key': ADMIN_KEY }
+      });
+      addLog(`AI POOL: Removed session for ${gmail}`);
+      loadData();
+    } catch (e) {
+      addLog(`ERR REMOVE: ${e.message}`);
     }
   };
 
@@ -245,12 +331,13 @@ export default function AdminCommandCenter() {
       </div>
 
       {/* ── TAB NAVIGATION ──────────────────────── */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {[
-          { id: 'users', label: 'DEVELOPER DATABASE', icon: Users },
-          { id: 'sessions', label: 'LIVE SESSIONS & KILL-SWITCH', icon: Server },
-          { id: 'edge', label: 'EDGE WORKER GATEWAY', icon: Cpu },
-          { id: 'logs', label: 'SYSTEM AUDIT LOGS', icon: Terminal },
+          { id: 'users', label: 'DEVELOPER DB', icon: Users },
+          { id: 'sessions', label: 'LIVE SESSIONS', icon: Server },
+          { id: 'ai-pool', label: 'AI SESSION POOL', icon: Bot, badge: aiSessions.filter(s => s.status === 'active').length },
+          { id: 'edge', label: 'EDGE GATEWAY', icon: Cpu },
+          { id: 'logs', label: 'AUDIT LOGS', icon: Terminal },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -259,11 +346,17 @@ export default function AdminCommandCenter() {
               background: activeTab === tab.id ? T.cyanDim : 'transparent',
               border: `1px solid ${activeTab === tab.id ? T.cyan : 'rgba(255,255,255,0.1)'}`,
               color: activeTab === tab.id ? T.cyan : T.muted,
-              padding: '10px 18px', cursor: 'pointer', fontFamily: T.mono, fontSize: '12px',
-              display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, transition: 'all 0.2s'
+              padding: '10px 16px', cursor: 'pointer', fontFamily: T.mono, fontSize: '11px',
+              display: 'flex', alignItems: 'center', gap: '7px', fontWeight: 700, transition: 'all 0.2s',
+              position: 'relative'
             }}
           >
-            <tab.icon size={15} /> {tab.label}
+            <tab.icon size={14} /> {tab.label}
+            {tab.badge !== undefined && (
+              <span style={{ background: T.green, color: '#000', borderRadius: '10px', fontSize: '10px', padding: '1px 6px', fontWeight: 900, marginLeft: '2px' }}>
+                {tab.badge}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -381,6 +474,195 @@ export default function AdminCommandCenter() {
           </div>
         </div>
       )}
+
+      {/* ── AI SESSION POOL ──────────────────────── */}
+      {activeTab === 'ai-pool' && (() => {
+        const statusColor = { active: T.green, rate_limited: '#f59e0b', expired: T.red, disabled: T.muted };
+        const statusLabel = { active: '● ACTIVE', rate_limited: '⚡ RATE LIMITED', expired: '✗ EXPIRED', disabled: '○ DISABLED' };
+        return (
+          <div style={{ background: T.card, border: T.cardBorder, padding: '20px' }}>
+            {/* Header row */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <h2 style={{ fontSize: '15px', color: T.cyan, margin: 0 }}>GOOGLE AI SESSION POOL</h2>
+                <p style={{ fontSize: '10px', color: T.muted, margin: '4px 0 0' }}>
+                  Pooled Google AI Studio API keys — shared across all IDEpro users
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAddSession(v => !v)}
+                style={{ background: T.cyanDim, border: `1px solid ${T.cyan}`, color: T.cyan, padding: '8px 16px', cursor: 'pointer', fontFamily: T.mono, fontSize: '11px', display: 'flex', alignItems: 'center', gap: '7px', fontWeight: 700 }}
+              >
+                <Plus size={13} /> ADD SESSION
+              </button>
+            </div>
+
+            {/* Stats row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '20px' }}>
+              {[
+                { label: 'TOTAL SESSIONS', val: aiSessions.length, color: T.cyan },
+                { label: 'ACTIVE', val: aiSessions.filter(s => s.status === 'active').length, color: T.green },
+                { label: 'RATE LIMITED', val: aiSessions.filter(s => s.status === 'rate_limited').length, color: '#f59e0b' },
+                { label: 'REQUESTS TODAY', val: aiSessions.reduce((acc, s) => acc + (s.requests_today || 0), 0), color: T.purple },
+              ].map(stat => (
+                <div key={stat.label} style={{ background: '#070912', border: `1px solid ${stat.color}33`, padding: '12px' }}>
+                  <div style={{ fontSize: '22px', fontWeight: 900, color: stat.color }}>{stat.val}</div>
+                  <div style={{ fontSize: '9px', color: T.muted, marginTop: '3px', letterSpacing: '1px' }}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Add Session Modal */}
+            {showAddSession && (
+              <div style={{ background: '#070912', border: `1px solid ${T.cyan}44`, padding: '20px', marginBottom: '20px' }}>
+                <h3 style={{ color: T.cyan, fontSize: '13px', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <KeyRound size={14} /> ADD NEW GOOGLE AI SESSION
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: '10px', color: T.muted, display: 'block', marginBottom: '4px' }}>GMAIL / ACCOUNT EMAIL *</label>
+                    <input
+                      value={newSession.gmail}
+                      onChange={e => setNewSession(v => ({ ...v, gmail: e.target.value }))}
+                      placeholder="example@gmail.com"
+                      style={{ width: '100%', padding: '9px 12px', background: T.inputBg, border: '1px solid #222', color: '#fff', fontSize: '12px', outline: 'none', fontFamily: T.mono, boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '10px', color: T.muted, display: 'block', marginBottom: '4px' }}>DISPLAY LABEL</label>
+                    <input
+                      value={newSession.display_name}
+                      onChange={e => setNewSession(v => ({ ...v, display_name: e.target.value }))}
+                      placeholder="e.g. Primary AI Account"
+                      style={{ width: '100%', padding: '9px 12px', background: T.inputBg, border: '1px solid #222', color: '#fff', fontSize: '12px', outline: 'none', fontFamily: T.mono, boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ fontSize: '10px', color: T.muted, display: 'block', marginBottom: '4px' }}>AUTH METHOD</label>
+                  <select
+                    value={newSession.auth_method}
+                    onChange={e => setNewSession(v => ({ ...v, auth_method: e.target.value }))}
+                    style={{ background: T.inputBg, border: '1px solid #222', color: T.cyan, padding: '9px 16px', fontSize: '12px', outline: 'none', fontFamily: T.mono }}
+                  >
+                    <option value="apikey">Google AI Studio API Key (Recommended)</option>
+                    <option value="cookie">Session Cookie JSON</option>
+                  </select>
+                </div>
+                <div style={{ marginBottom: '12px', position: 'relative' }}>
+                  <label style={{ fontSize: '10px', color: T.muted, display: 'block', marginBottom: '4px' }}>
+                    {newSession.auth_method === 'apikey' ? 'GOOGLE AI STUDIO API KEY *' : 'SESSION COOKIE JSON *'}
+                  </label>
+                  <input
+                    type={showCredential ? 'text' : 'password'}
+                    value={newSession.credential}
+                    onChange={e => setNewSession(v => ({ ...v, credential: e.target.value }))}
+                    placeholder={newSession.auth_method === 'apikey' ? 'AIzaSy...' : '{"__Secure-1PSID": "..."}'}
+                    style={{ width: '100%', padding: '9px 40px 9px 12px', background: T.inputBg, border: '1px solid #222', color: '#fff', fontSize: '12px', outline: 'none', fontFamily: T.mono, boxSizing: 'border-box' }}
+                  />
+                  <button onClick={() => setShowCredential(v => !v)} style={{ position: 'absolute', right: '10px', top: '26px', background: 'none', border: 'none', cursor: 'pointer', color: T.muted, padding: 0 }}>
+                    {showCredential ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ fontSize: '10px', color: T.muted, display: 'block', marginBottom: '4px' }}>NOTES (OPTIONAL)</label>
+                  <input
+                    value={newSession.notes}
+                    onChange={e => setNewSession(v => ({ ...v, notes: e.target.value }))}
+                    placeholder="e.g. Gifari's main account"
+                    style={{ width: '100%', padding: '9px 12px', background: T.inputBg, border: '1px solid #222', color: '#fff', fontSize: '12px', outline: 'none', fontFamily: T.mono, boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button
+                    onClick={handleAddAiSession}
+                    disabled={addingSession}
+                    style={{ background: T.cyanDim, border: `1px solid ${T.cyan}`, color: T.cyan, padding: '9px 20px', cursor: 'pointer', fontFamily: T.mono, fontSize: '11px', fontWeight: 700 }}
+                  >
+                    {addingSession ? 'ENCRYPTING & SAVING...' : 'SAVE SESSION →'}
+                  </button>
+                  <button
+                    onClick={() => setShowAddSession(false)}
+                    style={{ background: 'transparent', border: '1px solid #333', color: T.muted, padding: '9px 20px', cursor: 'pointer', fontFamily: T.mono, fontSize: '11px' }}
+                  >
+                    CANCEL
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Sessions Table */}
+            {aiSessions.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: T.muted, fontSize: '12px' }}>
+                <Bot size={32} color={T.muted} style={{ opacity: 0.4, display: 'block', margin: '0 auto 12px' }} />
+                NO AI SESSIONS IN POOL — ADD YOUR FIRST GOOGLE AI ACCOUNT
+              </div>
+            ) : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: `1px solid ${T.cyan}22`, color: T.cyan, fontSize: '10px' }}>
+                      <th style={{ padding: '10px 12px', textAlign: 'left' }}>ACCOUNT</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'left' }}>AUTH</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'left' }}>STATUS</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>REQ TODAY</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>TOTAL REQ</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>LAST USED</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'right' }}>ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {aiSessions.map(s => (
+                      <tr key={s.id} style={{ borderBottom: '1px solid #0d1020' }}>
+                        <td style={{ padding: '12px' }}>
+                          <div style={{ fontWeight: 700 }}>{s.gmail}</div>
+                          {s.display_name && <div style={{ fontSize: '9px', color: T.muted }}>{s.display_name}</div>}
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          <span style={{ background: T.purpleDim, color: T.purple, border: `1px solid ${T.purple}44`, padding: '2px 7px', fontSize: '9px', fontWeight: 700 }}>
+                            {s.auth_method === 'apikey' ? 'API KEY' : 'COOKIE'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '12px' }}>
+                          <span style={{ color: statusColor[s.status] || T.muted, fontWeight: 700, fontSize: '10px' }}>
+                            {statusLabel[s.status] || s.status}
+                          </span>
+                          {s.rate_limit_until && s.status === 'rate_limited' && (
+                            <div style={{ fontSize: '9px', color: T.muted }}>Reset: {new Date(s.rate_limit_until).toLocaleTimeString()}</div>
+                          )}
+                        </td>
+                        <td style={{ padding: '12px', textAlign: 'right', fontFamily: 'monospace', color: T.cyan }}>{s.requests_today || 0}</td>
+                        <td style={{ padding: '12px', textAlign: 'right', fontFamily: 'monospace', color: T.muted }}>{s.requests_total || 0}</td>
+                        <td style={{ padding: '12px', textAlign: 'right', fontSize: '9px', color: T.muted }}>
+                          {s.last_used_at ? new Date(s.last_used_at).toLocaleString() : '—'}
+                        </td>
+                        <td style={{ padding: '12px', textAlign: 'right' }}>
+                          <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                            <button
+                              onClick={() => handleToggleAiSession(s.id, s.status)}
+                              title={s.status === 'active' ? 'Disable' : 'Enable'}
+                              style={{ background: 'transparent', border: `1px solid ${s.status === 'active' ? T.green : T.muted}44`, color: s.status === 'active' ? T.green : T.muted, padding: '5px 8px', cursor: 'pointer' }}
+                            >
+                              {s.status === 'active' ? <ToggleRight size={13} /> : <ToggleLeft size={13} />}
+                            </button>
+                            <button
+                              onClick={() => handleRemoveAiSession(s.id, s.gmail)}
+                              title="Remove Session"
+                              style={{ background: 'transparent', border: `1px solid ${T.red}44`, color: T.red, padding: '5px 8px', cursor: 'pointer' }}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── EDGE WORKER GATEWAY ─────────────────── */}
       {activeTab === 'edge' && (
