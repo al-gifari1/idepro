@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "idepro-edge-gateway",
+  "name": "idepro",
   "main": "src/index.js",
   "compatibility_date": "2024-11-01",
   "compatibility_flags": [

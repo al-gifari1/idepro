@@ -2,6 +2,14 @@ import os
 import subprocess
 import sys
 
+# Enable UTF-8 streams for emoji support on Windows console
+if sys.stdout.encoding != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    except Exception:
+        pass
+
 def main():
     env_dir = os.path.dirname(os.path.abspath(__file__))
     env_path = os.path.join(env_dir, ".env")
