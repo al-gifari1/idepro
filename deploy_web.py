@@ -33,12 +33,8 @@ def main():
 
     print("\n--- STEP 3: Committing and Pushing to GitHub ---")
     # Git commit all changes
-    # Use remote origin if already configured or retrieve token from environment
-    token = os.environ.get("GITHUB_TOKEN", "")
-    if token:
-        repo_url = f"https://al-gifari1:{token}@github.com/al-gifari1/idepro.git"
-    else:
-        repo_url = "origin"
+    # Use configured origin remote
+    repo_url = "origin"
     
     # Configure git username and email if not set
     subprocess.run(["git", "config", "user.name", "al-gifari1"], shell=True)
@@ -48,7 +44,7 @@ def main():
     res = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, shell=True)
     if res.stdout.strip():
         run_cmd(["git", "add", "."], cwd=base_dir)
-        run_cmd(["git", "commit", "-m", "Unified deployment of web panel & gateway configuration with routing setups"], cwd=base_dir)
+        run_cmd(["git", "commit", "-m", "Fix runtime React crash by importing Bell icon and adjust SPA fallback routing"], cwd=base_dir)
     else:
         print("ℹ️ No git changes to commit.")
 

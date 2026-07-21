@@ -5,7 +5,8 @@ import AdminCommandCenter from './AdminPanel';
 import {
   Zap, ArrowRight, CheckCircle2, ChevronRight, Menu, X, Shield, Users, Radio,
   Mail, Server, BarChart3, Clock, AlertTriangle, Key, LogIn, LogOut, Settings,
-  CreditCard, LayoutDashboard, Copy, Check, RefreshCw, Power, Plus, Trash2, HelpCircle
+  CreditCard, LayoutDashboard, Copy, Check, RefreshCw, Power, Plus, Trash2, HelpCircle,
+  Bell
 } from 'lucide-react';
 
 const supabase = createClient(

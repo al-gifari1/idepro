@@ -107,8 +107,8 @@ export default {
       try {
         let assetResponse = await env.ASSETS.fetch(request);
         if (assetResponse.status === 404) {
-          // Fallback to index.html for React Router SPA
-          const spaUrl = new URL("/index.html", request.url);
+          // Fallback to root (index.html content) for React Router SPA to avoid 301 redirects
+          const spaUrl = new URL("/", request.url);
           assetResponse = await env.ASSETS.fetch(new Request(spaUrl, request));
         }
         return assetResponse;
