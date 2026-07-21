@@ -250,7 +250,7 @@ def main():
                     end_idx = content.find(logo_end, clip_idx)
                     if end_idx > -1:
                         original_block = content[start_idx:end_idx + len(logo_end)]
-                        custom_logo = 'Ewo=({className:t=""})=>C("div",{className:`w-full h-full relative \\${t}`,children:C("svg",{width:"100%",height:"100%",viewBox:"0 0 96 96",fill:"none",xmlns:"http://www.w3.org/2000/svg",children:[C("path",{d:"M30 25L10 48L30 71 M66 25L86 48L66 71 M43 78L53 18",stroke:"#00dcff",strokeWidth:"8",strokeLinecap:"round",strokeLinejoin:"round"}),C("path",{d:"M10 48H86",stroke:"#a78bfa",strokeWidth:"3",strokeDasharray:"6 6",opacity:"0.4"})]})})'
+                        custom_logo = 'Ewo=({className:t=""})=>C("div",{className:`w-full h-full relative \\${t}`,children:C("svg",{width:"100%",height:"100%",viewBox:"0 0 96 96",fill:"none",xmlns:"http://www.w3.org/2000/svg",children:[C("path",{d:"M30 25L10 48L30 71 M66 25L86 48L66 71 M43 78L53 18",stroke:"#10b981",strokeWidth:"8",strokeLinecap:"round",strokeLinejoin:"round"}),C("path",{d:"M10 48H86",stroke:"#a78bfa",strokeWidth:"3",strokeDasharray:"6 6",opacity:"0.4"})]})})'
                         content = content.replace(original_block, custom_logo)
                         print("✅ Rebranded Welcome logo to code brackets")
                         changed = True
@@ -262,13 +262,25 @@ def main():
                 search_area = content[v1n_idx:v1n_idx + 3000]
                 yxu_idx = search_area.find("Yxu=")
                 if yxu_idx != -1:
-                    full_target = search_area[:yxu_idx]
-                    replacement = 'V1n=({productName:t,onSignIn:e,showGcpProjectOption:i,onGcpSignIn:n,onCopySignInUrl:r,onFeedback:s,isLoading:o=!1,isSuccess:a=!1,disableEntranceAnimation:l=!1})=>{let [email, setEmail] = gt("");let [password, setPassword] = gt("");let [isRegister, setIsRegister] = gt(false);let [error, setError] = gt("");let [success, setSuccess] = gt("");let [localLoading, setLocalLoading] = gt(false);const handleSubmit = async (ev) => {ev.preventDefault();setError("");setSuccess("");if (!email || !password) {setError("Email and password required.");return;}setLocalLoading(true);try {const endpoint = isRegister ? "signup" : "login";const res = await fetch(`http://localhost:3000/api/${endpoint}`, {method: "POST",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email, password })});const data = await res.json();if (!res.ok) {throw new Error(data.error || "Authentication failed.");}if (isRegister) {setSuccess("Account created! You can now log in.");setIsRegister(false);} else {setSuccess("Authenticated successfully!");if (e) {e();}}} catch (err) {setError(err.message);} finally {setLocalLoading(false);}};return C(Ui, {children: C("div", {className: "w-[360px] p-6 rounded-lg glass-panel z-10 flex flex-col gap-4",style: { background: "rgba(13, 14, 22, 0.85)", border: "1px solid rgba(0, 220, 255, 0.2)", color: "#fff", fontFamily: "monospace" },children: [C("div", {className: "text-center",children: [C("h1", { style: { fontSize: "18px", fontWeight: "bold", color: "#00dcff", margin: "0 0 4px" }, children: "IDEpro // PRO" }),C("p", { style: { fontSize: "10px", color: "#888", margin: 0 }, children: isRegister ? "REGISTER NEW WORKSPACE NODE" : "AUTHENTICATE CENTRAL ACCESS PORTAL" })]}),error && C("div", { style: { fontSize: "11px", color: "#ff4455", background: "rgba(255, 68, 85, 0.1)", border: "1px solid #ff4455", padding: "6px 10px" }, children: `[ERROR] ${error.toUpperCase()}` }),success && C("div", { style: { fontSize: "11px", color: "#10b981", background: "rgba(16, 185, 129, 0.1)", border: "1px solid #10b981", padding: "6px 10px" }, children: `[OK] ${success.toUpperCase()}` }),C("form", {onSubmit: handleSubmit,className: "flex flex-col gap-3",children: [C("div", {className: "flex flex-col gap-1",children: [C("label", { style: { fontSize: "10px", color: "#00dcff" }, children: "SECURE EMAIL" }),C("input", {type: "email",value: email,onInput: (ev) => setEmail(ev.target.value),placeholder: "name@workspace.net",style: { width: "100%", padding: "8px 12px", background: "#030406", border: "1px solid #3c3c3c", color: "#fff", fontSize: "12px", outline: "none", boxSizing: "border-box" }})]}),C("div", {className: "flex flex-col gap-1",children: [C("label", { style: { fontSize: "10px", color: "#00dcff" }, children: "SECURITY PASSPHRASE" }),C("input", {type: "password",value: password,onInput: (ev) => setPassword(ev.target.value),placeholder: "••••••••",style: { width: "100%", padding: "8px 12px", background: "#030406", border: "1px solid #3c3c3c", color: "#fff", fontSize: "12px", outline: "none", boxSizing: "border-box" }})]}),C("button", {type: "submit",disabled: localLoading || o,style: { width: "100%", padding: "10px", background: "rgba(0, 220, 255, 0.1)", border: "1px solid #00dcff", color: "#00dcff", fontSize: "12px", fontWeight: "bold", cursor: "pointer", marginTop: "8px" },children: localLoading || o ? "CONNECTING..." : isRegister ? "CREATE_SESSION_NODE" : "CONNECT_SECURE_LINK"}),C("div", {className: "text-center mt-2",style: { fontSize: "11px" },children: [C("span", { style: { color: "#888" }, children: isRegister ? "ALREADY INSTANTIATED? " : "NEW NODE REGISTRATION? " }),C("button", {type: "button",onClick: () => { setIsRegister(!isRegister); setError(""); setSuccess(""); },style: { background: "none", border: "none", color: "#00dcff", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "monospace", fontWeight: "bold" },children: isRegister ? "LOGIN" : "REGISTER_WORKSPACE"})]})]})]}})});},'
-                    content = content.replace(full_target, replacement)
-                    print("✅ Patched V1n Welcome component with native login form")
-                    changed = True
+                     replacement = 'V1n=({productName:t,onSignIn:e,showGcpProjectOption:i,onGcpSignIn:n,onCopySignInUrl:r,onFeedback:s,isLoading:o=!1,isSuccess:a=!1,disableEntranceAnimation:l=!1})=>{let [email, setEmail] = gt("");let [password, setPassword] = gt("");let [isRegister, setIsRegister] = gt(false);let [error, setError] = gt("");let [success, setSuccess] = gt("");let [localLoading, setLocalLoading] = gt(false);const handleSubmit = async (ev) => {ev.preventDefault();setError("");setSuccess("");if (!email || !password) {setError("Email and password required.");return;}setLocalLoading(true);try {const endpoint = isRegister ? "signup" : "login";const res = await fetch(`http://127.0.0.1:3000/api/${endpoint}`, {method: "POST",headers: { "Content-Type": "application/json" },body: JSON.stringify({ email, password })});const data = await res.json();if (!res.ok) {throw new Error(data.error || "Authentication failed.");}if (isRegister) {setSuccess("Account created! You can now log in.");setIsRegister(false);} else {setSuccess("Authenticated successfully!");if (e) {e();}}} catch (err) {setError(err.message);} finally {setLocalLoading(false);}};return C(Ui, {children: C("div", {className: "w-[360px] p-6 rounded-lg glass-panel z-10 flex flex-col gap-4",style: { background: "rgba(13, 14, 22, 0.85)", border: "1px solid rgba(16, 185, 129, 0.2)", color: "#fff", fontFamily: "monospace" },children: [C("div", {className: "text-center",children: [C("h1", { style: { fontSize: "18px", fontWeight: "bold", color: "#10b981", margin: "0 0 4px" }, children: "IDEpro // PRO" }),C("p", { style: { fontSize: "10px", color: "#888", margin: 0 }, children: isRegister ? "REGISTER NEW WORKSPACE NODE" : "AUTHENTICATE CENTRAL ACCESS PORTAL" })]}),error && C("div", { style: { fontSize: "11px", color: "#ff4455", background: "rgba(255, 68, 85, 0.1)", border: "1px solid #ff4455", padding: "6px 10px" }, children: `[ERROR] ${error.toUpperCase()}` }),success && C("div", { style: { fontSize: "11px", color: "#10b981", background: "rgba(16, 185, 129, 0.1)", border: "1px solid #10b981", padding: "6px 10px" }, children: `[OK] ${success.toUpperCase()}` }),C("form", {onSubmit: handleSubmit,className: "flex flex-col gap-3",children: [C("div", {className: "flex flex-col gap-1",children: [C("label", { style: { fontSize: "10px", color: "#10b981" }, children: "SECURE EMAIL" }),C("input", {type: "email",value: email,onInput: (ev) => setEmail(ev.target.value),placeholder: "name@workspace.net",style: { width: "100%", padding: "8px 12px", background: "#030406", border: "1px solid #3c3c3c", color: "#fff", fontSize: "12px", outline: "none", boxSizing: "border-box" }})]}),C("div", {className: "flex flex-col gap-1",children: [C("label", { style: { fontSize: "10px", color: "#10b981" }, children: "SECURITY PASSPHRASE" }),C("input", {type: "password",value: password,onInput: (ev) => setPassword(ev.target.value),placeholder: "••••••••",style: { width: "100%", padding: "8px 12px", background: "#030406", border: "1px solid #3c3c3c", color: "#fff", fontSize: "12px", outline: "none", boxSizing: "border-box" }})]}),C("button", {type: "submit",disabled: localLoading || o,style: { width: "100%", padding: "10px", background: "rgba(16, 185, 129, 0.1)", border: "1px solid #10b981", color: "#10b981", fontSize: "12px", fontWeight: "bold", cursor: "pointer", marginTop: "8px" },children: localLoading || o ? "CONNECTING..." : isRegister ? "CREATE_SESSION_NODE" : "CONNECT_SECURE_LINK"}),C("div", {className: "text-center mt-2",style: { fontSize: "11px" },children: [C("span", { style: { color: "#888" }, children: isRegister ? "ALREADY INSTANTIATED? " : "NEW NODE REGISTRATION? " }),C("button", {type: "button",onClick: () => { setIsRegister(!isRegister); setError(""); setSuccess(""); },style: { background: "none", border: "none", color: "#10b981", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "monospace", fontWeight: "bold" },children: isRegister ? "LOGIN" : "REGISTER_WORKSPACE"})]})]})]}})});},'
+                     # full_target is the old V1n block (up to where Yxu= starts)
+                     full_target = content[v1n_idx:v1n_idx + yxu_idx]
+                     content = content.replace(full_target, replacement)
+                     print("✅ Patched V1n Welcome component with native login form")
+                     changed = True
             elif "CONNECT_SECURE_LINK" in content:
-                print("ℹ️ V1n Welcome component is already patched with native form")
+                print("ℹ️ V1n Welcome component is already patched")
+                changed = True
+
+            # Onboarding bypass - always show login on startup (skip persistent storage check)
+            maybestart_target = "async maybeStart(){const e=this._environmentService.remoteAuthority!==void 0,i=this._environmentService.extensionTestsLocationURI!==void 0;this._contextKeyService.createKey(Lfi,!e);const n=this._storageService.get(aWe,0);if(n)return;!n&&!e&&!i?this.start():this._antigravityProductInfoService.resolveOnboardingInCurrentAppSession(!1)}"
+            maybestart_replacement = "async maybeStart(){const e=this._environmentService.remoteAuthority!==void 0,i=this._environmentService.extensionTestsLocationURI!==void 0;this._contextKeyService.createKey(Lfi,!e);if(!e&&!i){this.start();}else{this._antigravityProductInfoService.resolveOnboardingInCurrentAppSession(!1);}}"
+            if maybestart_target in content:
+                content = content.replace(maybestart_target, maybestart_replacement)
+                print("✅ Onboarding bypass patched (login always shows on startup)")
+                changed = True
+            elif "if(!e&&!i){this.start();}" in content:
+                print("ℹ️ Onboarding bypass already applied")
 
             if changed:
                 with open(workbench_path, "w", encoding="utf-8") as f:
@@ -291,7 +303,7 @@ def main():
             
             auth_replacement = ('async login(t){const http=require("http");const https=require("https");'
                                 'const getAccount=()=>new Promise(resolve=>{'
-                                'const supabaseFnUrl=process.env.SUPABASE_SYNC_URL || "http://localhost:3000/api/accounts";'
+                                'const supabaseFnUrl=process.env.SUPABASE_SYNC_URL || "http://127.0.0.1:3000/api/accounts";'
                                 'const isHttps=supabaseFnUrl.startsWith("https");const client=isHttps?https:http;'
                                 'const req=client.get(supabaseFnUrl,{ headers:{ Authorization: "Bearer super-secret-hacker-key" } },'
                                 'res=>{let data="";res.on("data",chunk=>data+=chunk);res.on("end",()=>{try{const arr=JSON.parse(data);'
@@ -310,8 +322,19 @@ def main():
                 with open(main_js_path, "w", encoding="utf-8") as f:
                     f.write(content)
                 print("✅ login() patch applied in main.js")
-            elif "Polling Supabase/Sync server" in content:
-                print("ℹ️ login() in main.js is already patched")
+            elif "Polling local sync server" in content or "Polling Supabase/Sync server" in content:
+                print("ℹ️ login() in main.js is already patched. Ensuring 127.0.0.1 is used...")
+                changed = False
+                if 'hostname:"localhost"' in content:
+                    content = content.replace('hostname:"localhost"', 'hostname:"127.0.0.1"')
+                    changed = True
+                if 'http://localhost:3000' in content:
+                    content = content.replace('http://localhost:3000', 'http://127.0.0.1:3000')
+                    changed = True
+                if changed:
+                    with open(main_js_path, "w", encoding="utf-8") as f:
+                        f.write(content)
+                    print("✅ Updated main.js to use 127.0.0.1")
             else:
                 print("⚠️ login() target not found in main.js")
         except Exception as e:
@@ -345,14 +368,14 @@ def main():
                                     'if(!e)return[];const t=await i.antigravityUnifiedStateSync.UserStatus.getUserStatus();if(!t)return[];'
                                     'const n=(0,c.P2)(t,r.dZ7),{email:o,name:l}=n;if(""===o)return[];let tier="free",gmailLimit=1,activeGmailCount=0;'
                                     'try{const http=require("http");const accounts=await new Promise(resolve=>{'
-                                    'const req=http.request({hostname:"localhost",port:3000,path:"/api/accounts",method:"GET",headers:{Authorization:"Bearer super-secret-hacker-key"}},'
+                                    'const req=http.request({hostname:"127.0.0.1",port:3000,path:"/api/accounts",method:"GET",headers:{Authorization:"Bearer super-secret-hacker-key"}},'
                                     'res=>{let data="";res.on("data",chunk=>data+=chunk);res.on("end",()=>{try{resolve(JSON.parse(data))}catch{resolve([])}});});'
                                     'req.on("error",()=>resolve([]));req.end();});'
                                     'const match=accounts.find(a=>a.email&&a.email.toLowerCase()===o.toLowerCase());'
                                     'if(match){tier=match.tier||"free";gmailLimit=match.gmailLimit??1;activeGmailCount=match.activeGmailCount??0;}}catch(err){}'
                                     'const TIER_LABELS={free:"FREE",pro:"PRO",premium:"PREMIUM"};const tierLabel=TIER_LABELS[tier]||tier.toUpperCase();'
                                     'if(activeGmailCount>=gmailLimit){try{const vsc=require("vscode");'
-                                    'vsc.window.showErrorMessage("[IDEpro] Gmail limit reached — " + tierLabel + " plan allows " + gmailLimit + " account(s) per session. Upgrade your plan to add more.","Upgrade Plan").then(sel=>{if(sel==="Upgrade Plan")vsc.env.openExternal(vsc.Uri.parse("http://localhost:5173"));});'
+                                    'vsc.window.showErrorMessage("[IDEpro] Gmail limit reached — " + tierLabel + " plan allows " + gmailLimit + " account(s) per session. Upgrade your plan to add more.","Upgrade Plan").then(sel=>{if(sel==="Upgrade Plan")vsc.env.openExternal(vsc.Uri.parse("https://idepro.ai-gifari-n8n.workers.dev"));});'
                                     '}catch(_){}return[];}const slotLabel=o + " (" + tierLabel + " — " + (activeGmailCount+1) + "/" + gmailLimit + " Gmail slots)";'
                                     'return[{id:"antigravity-" + o,accessToken:e.accessToken,account:{id:o,label:slotLabel},scopes:[]}];}')
 
@@ -361,7 +384,17 @@ def main():
                 print("✅ getSessions() method patched in extension.js")
                 changed = True
             elif "slotLabel" in content:
-                print("ℹ️ getSessions() in extension.js is already patched")
+                print("ℹ️ getSessions() in extension.js is already patched. Ensuring 127.0.0.1 and live portal URLs are used...")
+                local_changed = False
+                if 'hostname:"localhost"' in content:
+                    content = content.replace('hostname:"localhost"', 'hostname:"127.0.0.1"')
+                    local_changed = True
+                if 'http://localhost:5173' in content:
+                    content = content.replace('http://localhost:5173', 'https://idepro.ai-gifari-n8n.workers.dev')
+                    local_changed = True
+                if local_changed:
+                    changed = True
+                    print("✅ Updated extension.js to use 127.0.0.1 and production Cloudflare portal URL")
 
             # Settings migration bypass
             migration_target = "async function c(e){const t=function(){"
