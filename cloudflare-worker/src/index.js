@@ -475,7 +475,7 @@ export default {
             tier: tier || "free",
             gmail_limit: parseInt(gmail_limit) || 1,
             updated_at: new Date().toISOString()
-          }, { onConflict: "email" });
+          }, { onConflict: "id" });
 
         if (profileErr) {
           return json({ error: `User created, but profile upsert failed: ${profileErr.message}` }, 500);
